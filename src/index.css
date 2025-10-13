@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
+
+@keyframes scroll {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-scroll {
+  animation: scroll 25s linear infinite;
+  will-change: transform;
+}
+
