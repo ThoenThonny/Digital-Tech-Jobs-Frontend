@@ -45,7 +45,7 @@ export default function Home() {
                 <div className="w-[100%] h-[200px] bg-blue-50">
 
                 </div>
-                <div className="h-[100vh] bg-gradient-to-br from-blue-50 via-white to-blue-100 p-8 flex flex-col items-center">
+                <div className="h-[80vh] bg-gradient-to-br from-blue-50 via-white to-blue-100 px-12 flex flex-col items-center">
                     {/* Carousel */}
                     <div className="w-full h-[400vh] flex flex-col md:flex-row gap-12 items-center relative overflow-hidden">
                         {slides.map((slide, index) => (

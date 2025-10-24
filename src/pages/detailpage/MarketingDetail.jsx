@@ -1,6 +1,8 @@
-import React, { useRef, useState } from 'react';
-import { Building2, MapPin, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Building2, MapPin, ChevronRight, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import jobService from '../../service/jobsService';
+
 export default function MarkitingDetail() {
   const [expandedSections, setExpandedSections] = useState({
     internship: false,
@@ -8,6 +10,97 @@ export default function MarkitingDetail() {
     mid: false,
     senior: false
   });
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Filter only Marketing category jobs
+  const filterMarketingCategoryJobs = (jobsData) => {
+    if (!jobsData) return [];
+    
+    return jobsData.filter(job => {
+      const category = job.category?.toLowerCase() || '';
+      const title = job.title?.toLowerCase() || '';
+      const tags = job.tags || [];
+      const skills = job.skills || [];
+      
+      // Marketing-related keywords
+      const marketingKeywords = [
+        'marketing', 'digital marketing', 'social media', 'content', 'seo',
+        'advertising', 'brand', 'campaign', 'market research', 'analytics',
+        'email marketing', 'influencer', 'public relations', 'pr',
+        'growth', 'demand generation', 'product marketing', 'content marketing',
+        'social media marketing', 'performance marketing', 'brand management'
+      ];
+      
+      // Check if job is Marketing-related
+      return marketingKeywords.some(keyword => 
+        category.includes(keyword) ||
+        title.includes(keyword) ||
+        tags.some(tag => tag.toLowerCase().includes(keyword)) ||
+        skills.some(skill => skill.toLowerCase().includes(keyword))
+      );
+    });
+  };
+
+  // Fetch jobs from API
+  useEffect(() => {
+    fetchMarketingJobs();
+  }, []);
+
+  const fetchMarketingJobs = async () => {
+    try {
+      setLoading(true);
+      let marketingJobs = [];
+
+      // Try to get Marketing category jobs directly from API
+      try {
+        marketingJobs = await jobService.getJobsByCategory('Marketing');
+      } catch (categoryError) {
+        console.log('Marketing category endpoint not available, filtering all jobs...');
+        // If category endpoint fails, get all jobs and filter by Marketing category
+        const allJobs = await jobService.getJobs();
+        marketingJobs = filterMarketingCategoryJobs(allJobs);
+      }
+
+      setJobs(marketingJobs);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching Marketing jobs:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Categorize Marketing jobs by level
+  const categorizeJobsByLevel = (marketingJobs) => {
+    const categorized = {
+      internship: [],
+      entry: [],
+      mid: [],
+      senior: []
+    };
+
+    marketingJobs.forEach(job => {
+      const level = job.level?.toLowerCase() || '';
+      
+      if (level.includes('intern') || level.includes('student') || level.includes('trainee')) {
+        categorized.internship.push(job);
+      } else if (level.includes('junior') || level.includes('entry') || level.includes('fresher')) {
+        categorized.entry.push(job);
+      } else if (level.includes('mid') || level.includes('medium') || level.includes('intermediate') || level.includes('associate')) {
+        categorized.mid.push(job);
+      } else if (level.includes('senior') || level.includes('lead') || level.includes('principal') || level.includes('expert')) {
+        categorized.senior.push(job);
+      } else {
+        // Default to mid level if no level specified
+        categorized.mid.push(job);
+      }
+    });
+
+    return categorized;
+  };
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
@@ -16,194 +109,31 @@ export default function MarkitingDetail() {
     }));
   };
 
-  const jobsByLevel = {
-    internship: [
-      {
-        id: 1,
-        title: "Marketing Intern",
-        company: "Digital Media Agency",
-        location: "San Francisco, CA",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
-        tags: ["Internship", "Remote", "$18/hour"]
-      },
-      {
-        id: 2,
-        title: "Social Media Intern",
-        company: "Brand Builders Co",
-        location: "New York, NY",
-        image: "https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop",
-        tags: ["Internship", "Hybrid", "$17/hour"]
-      },
-      {
-        id: 3,
-        title: "Content Marketing Intern",
-        company: "Content Hub",
-        location: "Austin, TX",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
-        tags: ["Internship", "On-site", "$19/hour"]
-      },
-      {
-        id: 4,
-        title: "Email Marketing Intern",
-        company: "Marketing Solutions",
-        location: "Chicago, IL",
-        image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=300&fit=crop",
-        tags: ["Internship", "Remote", "$16/hour"]
-      },
-      {
-        id: 5,
-        title: "SEO Intern",
-        company: "Digital Growth Labs",
-        location: "Seattle, WA",
-        image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop",
-        tags: ["Internship", "Hybrid", "$20/hour"]
-      }
-    ],
-    entry: [
-      {
-        id: 6,
-        title: "Junior Marketing Coordinator",
-        company: "Creative Innovations",
-        location: "Boston, MA",
-        image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        tags: ["Entry Level", "Remote", "$48k-58k"]
-      },
-      {
-        id: 7,
-        title: "Social Media Specialist",
-        company: "Brand Strategy Group",
-        location: "Denver, CO",
-        image: "https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop",
-        tags: ["Entry Level", "Hybrid", "$50k-60k"]
-      },
-      {
-        id: 8,
-        title: "Content Writer",
-        company: "Publishing Plus",
-        location: "Los Angeles, CA",
-        image: "https://images.unsplash.com/photo-1455849318169-8d3cb32ba205?w=400&h=300&fit=crop",
-        tags: ["Entry Level", "On-site", "$45k-55k"]
-      },
-      {
-        id: 9,
-        title: "Digital Marketing Assistant",
-        company: "Tech Marketing Pro",
-        location: "Miami, FL",
-        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
-        tags: ["Entry Level", "Remote", "$52k-62k"]
-      },
-      {
-        id: 10,
-        title: "Marketing Analyst",
-        company: "Data Insights Inc",
-        location: "Portland, OR",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
-        tags: ["Entry Level", "Hybrid", "$50k-60k"]
-      }
-    ],
-    mid: [
-      {
-        id: 11,
-        title: "Marketing Manager",
-        company: "Global Brand Solutions",
-        location: "San Francisco, CA",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
-        tags: ["Mid Level", "Remote", "$75k-95k"]
-      },
-      {
-        id: 12,
-        title: "SEO Manager",
-        company: "Digital Excellence",
-        location: "New York, NY",
-        image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop",
-        tags: ["Mid Level", "Hybrid", "$70k-90k"]
-      },
-      {
-        id: 13,
-        title: "Content Strategy Manager",
-        company: "Creative Agency Plus",
-        location: "Austin, TX",
-        image: "https://images.unsplash.com/photo-1455849318169-8d3cb32ba205?w=400&h=300&fit=crop",
-        tags: ["Mid Level", "On-site", "$78k-98k"]
-      },
-      {
-        id: 14,
-        title: "Brand Manager",
-        company: "Market Leaders Co",
-        location: "Seattle, WA",
-        image: "https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop",
-        tags: ["Mid Level", "Remote", "$80k-100k"]
-      },
-      {
-        id: 15,
-        title: "Performance Marketing Manager",
-        company: "Growth Partners",
-        location: "Chicago, IL",
-        image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop",
-        tags: ["Mid Level", "Hybrid", "$76k-96k"]
-      }
-    ],
-    senior: [
-      {
-        id: 16,
-        title: "Senior Marketing Manager",
-        company: "Fortune 500 Corp",
-        location: "San Francisco, CA",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
-        tags: ["Senior", "Remote", "$120k-150k"]
-      },
-      {
-        id: 17,
-        title: "Head of Marketing",
-        company: "Tech Innovation Labs",
-        location: "Seattle, WA",
-        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
-        tags: ["Senior", "Hybrid", "$130k-160k"]
-      },
-      {
-        id: 18,
-        title: "Chief Marketing Officer",
-        company: "Enterprise Solutions",
-        location: "Boston, MA",
-        image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop",
-        tags: ["Senior", "Remote", "$140k-180k"]
-      },
-      {
-        id: 19,
-        title: "VP of Brand & Marketing",
-        company: "Global Enterprises",
-        location: "New York, NY",
-        image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop",
-        tags: ["Senior", "On-site", "$150k-200k"]
-      },
-      {
-        id: 20,
-        title: "Senior Director of Growth",
-        company: "SaaS Unicorn",
-        location: "San Jose, CA",
-        image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=300&fit=crop",
-        tags: ["Senior", "Hybrid", "$160k-220k"]
-      }
-    ]
-  };
-
   const JobCard = ({ job, isExpanded }) => (
     <div 
-      className={`${isExpanded ? 'w-full' : 'min-w-[320px] flex-shrink-0 snap-start'} bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-300 cursor-pointer group`}
+      className={`${isExpanded ? 'w-full' : 'min-w-[320px] flex-shrink-0 snap-start'} bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-300 cursor-pointer group`}
     >
       <div className="relative overflow-hidden">
         <img 
-          src={job.image} 
+          src={job.poster || job.image || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop'} 
           alt={job.title} 
           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300" 
+          onError={(e) => {
+            e.target.src = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop';
+          }}
         />
-        <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-semibold text-blue-600 shadow-md">
-          New
+        <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+          MARKETING
         </div>
+        {job.level && (
+          <div className="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-xs font-semibold text-green-600 shadow-md">
+            {job.level}
+          </div>
+        )}
       </div>
       
       <div className="p-5">
-        <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
           {job.title}
         </h3>
         
@@ -217,22 +147,35 @@ export default function MarkitingDetail() {
           <span>{job.location}</span>
         </div>
         
+        {/* Tags from job data */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {job.tags.map((tag, idx) => (
+          {(job.tags || job.skills || []).slice(0, 3).map((tag, idx) => (
             <span 
               key={idx} 
-              className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium border border-blue-100"
+              className="text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium border border-green-100"
             >
               {tag}
             </span>
           ))}
+          {job.type && (
+            <span className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium border border-blue-100">
+              {job.type}
+            </span>
+          )}
         </div>
-       <Link to={`/marketingDetail/${job.id}`}>
         
-        <button className="w-full py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium">
-          View Details
-        </button>
-       </Link>
+        {/* Salary if available */}
+        {job.salary && (
+          <div className="mb-4">
+            <p className="text-green-600 font-semibold text-sm">{job.salary}</p>
+          </div>
+        )}
+        
+        <Link to={`/marketingDetail/${job.id}`}>
+          <button className="w-full py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium">
+            View Details
+          </button>
+        </Link>
       </div>
     </div>
   );
@@ -241,96 +184,134 @@ export default function MarkitingDetail() {
     const isExpanded = expandedSections[level];
     
     return (
-      <div>
-      
-      
       <div className="mb-12">
-        
-        
-        <div className="flex justify-between items-center  mb-6">
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-2xl shadow-lg`}>
               {icon}
             </div>
             <div>
               <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-              <p className="text-gray-600 text-sm">{jobs.length} positions available</p>
+              <p className="text-gray-600 text-sm">{jobs.length} marketing positions available</p>
             </div>
           </div>
           
-          <button 
-            onClick={() => toggleSection(level)}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl group"
-          >
-            {isExpanded ? 'Show Less' : 'Show More'}
-            <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''} group-hover:translate-x-1`} />
-          </button>
+          {jobs.length > 0 && (
+            <button 
+              onClick={() => toggleSection(level)}
+              className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl group"
+            >
+              {isExpanded ? 'Show Less' : 'Show More'}
+              <ChevronRight className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''} group-hover:translate-x-1`} />
+            </button>
+          )}
         </div>
 
-        {!isExpanded ? (
-          <div 
-            className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {jobs.map(job => (
-              <JobCard key={job.id} job={job} isExpanded={false} />
-            ))}
-          </div>
+        {jobs.length > 0 ? (
+          !isExpanded ? (
+            <div 
+              className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {jobs.map(job => (
+                <JobCard key={job.id} job={job} isExpanded={false} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {jobs.map(job => (
+                <JobCard key={job.id} job={job} isExpanded={true} />
+              ))}
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {jobs.map(job => (
-              <JobCard key={job.id} job={job} isExpanded={true} />
-            ))}
+          <div className="text-center py-8 bg-gray-50 rounded-2xl">
+            <p className="text-gray-500">No {title.toLowerCase()} marketing positions available</p>
           </div>
         )}
       </div>
-      </div>
-
     );
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-orange-50 flex items-center justify-center p-8">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-green-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 text-lg">Loading marketing jobs...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-orange-50 flex items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-red-600 text-lg mb-4">Error: {error}</p>
+          <button 
+            onClick={fetchMarketingJobs}
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const categorizedJobs = categorizeJobsByLevel(jobs);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-orange-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-orange-50 p-8 py-32">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
             Marketing Careers Await
           </h1>
+          <p className="text-gray-600 text-xl mb-4">
+            Explore marketing opportunities across all experience levels
+          </p>
+          <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg inline-block">
+            <span className="font-semibold">Marketing Jobs Only</span>
+          </div>
+          <div className="mt-2 text-sm text-gray-500">
+            Showing {jobs.length} marketing positions
+          </div>
         </div>
 
         <JobSection 
-          title="Internships" 
+          title="Marketing Internships" 
           level="internship" 
-          jobs={jobsByLevel.internship}
+          jobs={categorizedJobs.internship}
           icon="🎓"
           gradient="from-green-400 to-emerald-500"
         />
 
         <JobSection 
-          title="Entry Level" 
+          title="Entry Level Marketing" 
           level="entry" 
-          jobs={jobsByLevel.entry}
+          jobs={categorizedJobs.entry}
           icon="🚀"
           gradient="from-blue-400 to-cyan-500"
         />
 
         <JobSection 
-          title="Mid Level" 
+          title="Mid Level Marketing" 
           level="mid" 
-          jobs={jobsByLevel.mid}
+          jobs={categorizedJobs.mid}
           icon="📊"
           gradient="from-purple-400 to-blue-500"
         />
 
         <JobSection 
-          title="Senior Level" 
+          title="Senior Level Marketing" 
           level="senior" 
-          jobs={jobsByLevel.senior}
+          jobs={categorizedJobs.senior}
           icon="👑"
           gradient="from-orange-400 to-red-500"
         />
       </div>
     </div>
-    
   );
 }

@@ -12,4 +12,7 @@
   animation: scroll 25s linear infinite;
   will-change: transform;
 }
+*::-webkit-scrollbar{
+  display: none;
+}
 

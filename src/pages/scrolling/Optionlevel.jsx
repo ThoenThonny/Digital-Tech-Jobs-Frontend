@@ -1,11 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Search, MapPin, Building2, Briefcase, Zap, TrendingUp, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { jobService } from '../../service/jobsService'; // Import the jobService
 
 export default function Optionlevel() {
   const scrollRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const jobLevels = [
     { titleKh: 'ការងារមិនត្រូវការបទពិសោធន៍', titleEn: 'Internship', count: 15, icon: Briefcase },
@@ -14,58 +18,76 @@ export default function Optionlevel() {
     { titleKh: 'ការងារមិនត្រូវការបទពិសោធន៍ខ្ពស់', titleEn: 'Senior Level', count: 15, icon: Award },
   ];
 
-  const jobs = [
-    // IT Jobs
-    { id: 1, image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop', tags: ['Flutter', 'Postgres', 'REST'], title: 'Mobile Developer', company: 'Tech Corp', location: 'Phnom Penh', category: 'IT' },
-    { id: 2, image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop', tags: ['Software', 'IT'], title: 'Software Engineer', company: 'Digital Solutions', location: 'Remote', category: 'IT' },
-    { id: 3, image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop', tags: ['JSON', 'API'], title: 'Backend Developer', company: 'StartUp Inc', location: 'Phnom Penh', category: 'IT' },
-    { id: 4, image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=300&fit=crop', tags: ['Postgres', 'MongoDB'], title: 'Database Admin', company: 'Data Systems', location: 'Siem Reap', category: 'IT' },
-    { id: 5, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop', tags: ['React', 'UI/UX'], title: 'Frontend Developer', company: 'Creative Agency', location: 'Phnom Penh', category: 'IT' },
-    { id: 6, image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop', tags: ['DevOps', 'AWS'], title: 'Cloud Engineer', company: 'Cloud Services', location: 'Remote', category: 'IT' },
-    { id: 7, image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop', tags: ['Python', 'Django'], title: 'Full Stack Developer', company: 'Web Solutions', location: 'Phnom Penh', category: 'IT' },
-    { id: 8, image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop', tags: ['Java', 'Spring'], title: 'Java Developer', company: 'Enterprise Corp', location: 'Remote', category: 'IT' },
-    { id: 9, image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop', tags: ['JavaScript', 'Node.js'], title: 'Node.js Developer', company: 'StartUp Hub', location: 'Phnom Penh', category: 'IT' },
-    { id: 10, image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop', tags: ['DevOps', 'Docker'], title: 'DevOps Engineer', company: 'Tech Infrastructure', location: 'Remote', category: 'IT' },
-    { id: 11, image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=300&fit=crop', tags: ['PHP', 'Laravel'], title: 'Laravel Developer', company: 'Web Agency', location: 'Phnom Penh', category: 'IT' },
-    { id: 12, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop', tags: ['Data Science', 'ML'], title: 'Data Scientist', company: 'AI Labs', location: 'Remote', category: 'IT' },
-    { id: 13, image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop', tags: ['QA', 'Testing'], title: 'QA Engineer', company: 'Quality Assurance', location: 'Phnom Penh', category: 'IT' },
-    { id: 14, image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop', tags: ['Kubernetes', 'CI/CD'], title: 'Site Reliability Engineer', company: 'Cloud Operations', location: 'Remote', category: 'IT' },
-    { id: 15, image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop', tags: ['API', 'REST'], title: 'API Developer', company: 'Integration Solutions', location: 'Phnom Penh', category: 'IT' },
+  // Load jobs from API
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
-    // Marketing Jobs
-    { id: 16, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop', tags: ['Digital', 'SEO'], title: 'Digital Marketing Manager', company: 'Marketing Pro', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 17, image: 'https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop', tags: ['Social Media', 'Content'], title: 'Social Media Manager', company: 'Brand Agency', location: 'Remote', category: 'Marketing' },
-    { id: 18, image: 'https://images.unsplash.com/photo-1455849318169-8d3cb32ba205?w=400&h=300&fit=crop', tags: ['Content', 'Writing'], title: 'Content Creator', company: 'Media House', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 19, image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop', tags: ['Analytics', 'Data'], title: 'Marketing Analyst', company: 'Data Insights', location: 'Remote', category: 'Marketing' },
-    { id: 20, image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=300&fit=crop', tags: ['Email', 'Automation'], title: 'Email Marketing Specialist', company: 'CRM Solutions', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 21, image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop', tags: ['Brand', 'Strategy'], title: 'Brand Strategist', company: 'Creative Studio', location: 'Remote', category: 'Marketing' },
-    { id: 22, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop', tags: ['PPC', 'Ads'], title: 'PPC Specialist', company: 'Ad Agency', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 23, image: 'https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop', tags: ['Influencer', 'Marketing'], title: 'Influencer Manager', company: 'Marketing Firm', location: 'Remote', category: 'Marketing' },
-    { id: 24, image: 'https://images.unsplash.com/photo-1455849318169-8d3cb32ba205?w=400&h=300&fit=crop', tags: ['SEO', 'SEM'], title: 'SEO Specialist', company: 'Digital Agency', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 25, image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop', tags: ['Video', 'Production'], title: 'Video Marketing Producer', company: 'Production House', location: 'Remote', category: 'Marketing' },
-    { id: 26, image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=300&fit=crop', tags: ['Community', 'Management'], title: 'Community Manager', company: 'Social Platforms', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 27, image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop', tags: ['Growth', 'Marketing'], title: 'Growth Marketing Manager', company: 'Tech Startup', location: 'Remote', category: 'Marketing' },
-    { id: 28, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop', tags: ['Event', 'Marketing'], title: 'Event Marketing Coordinator', company: 'Events Plus', location: 'Phnom Penh', category: 'Marketing' },
-    { id: 29, image: 'https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop', tags: ['PR', 'Communications'], title: 'PR Specialist', company: 'PR Agency', location: 'Remote', category: 'Marketing' },
-    { id: 30, image: 'https://images.unsplash.com/photo-1455849318169-8d3cb32ba205?w=400&h=300&fit=crop', tags: ['Marketing', 'Operations'], title: 'Marketing Operations Manager', company: 'Corporate Marketing', location: 'Phnom Penh', category: 'Marketing' },
+  const loadJobs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('🔄 Loading jobs from API...');
+      
+      const jobsData = await jobService.getJobs();
+      console.log('✅ Jobs loaded successfully:', jobsData);
+      
+      // Transform API data to match your component structure
+      const transformedJobs = jobsData.map((job, index) => ({
+        id: job.id,
+        image: job.poster || getDefaultImage(job.category, index),
+        tags: job.skill ? job.skill.split(',').map(s => s.trim()) : [job.category],
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        category: job.category || 'IT', // Default to IT if no category
+        salary: job.salary,
+        level: job.level,
+        experience: job.experience,
+        description: job.job_description
+      }));
+      
+      setJobs(transformedJobs);
+    } catch (err) {
+      console.error('❌ Error loading jobs:', err);
+      setError(err.message);
+      // Fallback to mock data if API fails
+      setJobs(getMockJobs());
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Design Jobs
-    { id: 31, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['UI', 'UX'], title: 'UI/UX Designer', company: 'Design Studio', location: 'Phnom Penh', category: 'Design' },
-    { id: 32, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Graphic', 'Design'], title: 'Graphic Designer', company: 'Creative Agency', location: 'Remote', category: 'Design' },
-    { id: 33, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['Web', 'Design'], title: 'Web Designer', company: 'Web Studio', location: 'Phnom Penh', category: 'Design' },
-    { id: 34, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Motion', 'Graphics'], title: 'Motion Graphics Designer', company: 'Animation Studio', location: 'Remote', category: 'Design' },
-    { id: 35, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['Product', 'Design'], title: 'Product Designer', company: 'Tech Company', location: 'Phnom Penh', category: 'Design' },
-    { id: 36, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Brand', 'Design'], title: 'Brand Designer', company: 'Branding Firm', location: 'Remote', category: 'Design' },
-    { id: 37, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['3D', 'Design'], title: '3D Designer', company: '3D Studio', location: 'Phnom Penh', category: 'Design' },
-    { id: 38, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Illustration', 'Art'], title: 'Illustrator', company: 'Art Studio', location: 'Remote', category: 'Design' },
-    { id: 39, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['Interaction', 'Design'], title: 'Interaction Designer', company: 'Digital Agency', location: 'Phnom Penh', category: 'Design' },
-    { id: 40, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Experience', 'Design'], title: 'Experience Designer', company: 'UX Firm', location: 'Remote', category: 'Design' },
-    { id: 41, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['Print', 'Design'], title: 'Print Designer', company: 'Printing Company', location: 'Phnom Penh', category: 'Design' },
-    { id: 42, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Fashion', 'Design'], title: 'Fashion Designer', company: 'Fashion House', location: 'Remote', category: 'Design' },
-    { id: 43, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['Game', 'Design'], title: 'Game Designer', company: 'Game Studio', location: 'Phnom Penh', category: 'Design' },
-    { id: 44, image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop', tags: ['Packaging', 'Design'], title: 'Packaging Designer', company: 'Design Studio', location: 'Remote', category: 'Design' },
-    { id: 45, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop', tags: ['Design', 'Lead'], title: 'Design Lead', company: 'Creative Studio', location: 'Phnom Penh', category: 'Design' },
-  ];
+  // Helper function to get default images based on category
+  const getDefaultImage = (category, index) => {
+    const categoryImages = {
+      IT: [
+        'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop'
+      ],
+      Marketing: [
+        'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1455849318169-8d3cb32ba205?w=400&h=300&fit=crop'
+      ],
+      Design: [
+        'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=400&h=300&fit=crop'
+      ]
+    };
+    
+    const images = categoryImages[category] || categoryImages.IT;
+    return images[index % images.length];
+  };
+
+  // Fallback mock data (keep your original mock data as backup)
+  const getMockJobs = () => {
+    return [
+      // Your original mock data here (the 45 jobs array)
+      // ... (keep your original mock data array)
+    ];
+  };
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -83,10 +105,38 @@ export default function Optionlevel() {
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      (job.tags && job.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
 
     return matchesCategory && matchesSearch;
   });
+
+  // Update job counts based on actual data
+  const updatedJobLevels = jobLevels.map(level => ({
+    ...level,
+    count: jobs.filter(job => {
+      switch(level.titleEn) {
+        case 'Internship': return job.level === 'intern';
+        case 'Junior Level': return job.level === 'junior';
+        case 'Medium Level': return job.level === 'mid';
+        case 'Senior Level': return job.level === 'senior' || job.level === 'lead';
+        default: return false;
+      }
+    }).length
+  }));
+
+  // Get unique categories from actual jobs
+  const categories = ['all', ...new Set(jobs.map(job => job.category).filter(Boolean))];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading jobs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -96,11 +146,16 @@ export default function Optionlevel() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Find Your Dream Job</h1>
           <p className="text-gray-600 text-lg">Explore opportunities across all experience levels</p>
+          {error && (
+            <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 rounded-lg text-yellow-700">
+              <strong>Note:</strong> {error} - Showing demo data
+            </div>
+          )}
         </div>
 
         {/* Job Level Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {jobLevels.map((level, i) => {
+          {updatedJobLevels.map((level, i) => {
             const IconComponent = level.icon;
             return (
               <div
@@ -137,7 +192,7 @@ export default function Optionlevel() {
 
         {/* Category Filter */}
         <div className="flex gap-3 mb-8 flex-wrap">
-          {['all', 'IT', 'Marketing', 'Design'].map(cat => (
+          {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -154,7 +209,9 @@ export default function Optionlevel() {
         {/* Jobs Section with Scroll */}
         <div className="relative">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Jobs</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Featured Jobs {filteredJobs.length > 0 && `(${filteredJobs.length})`}
+            </h2>
             <div className="flex gap-2">
               <button
                 onClick={() => scroll('left')}
@@ -190,7 +247,7 @@ export default function Optionlevel() {
                       className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-semibold text-blue-600 shadow-md">
-                      New
+                      {job.level || 'New'}
                     </div>
                   </div>
 
@@ -209,8 +266,14 @@ export default function Optionlevel() {
                       <span>{job.location}</span>
                     </div>
 
+                    {job.salary && (
+                      <div className="text-sm text-green-600 font-semibold mb-3">
+                        ${job.salary.toLocaleString()}
+                      </div>
+                    )}
+
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {job.tags.map((tag, idx) => (
+                      {job.tags && job.tags.slice(0, 3).map((tag, idx) => (
                         <span
                           key={idx}
                           className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium border border-blue-100"
@@ -225,13 +288,18 @@ export default function Optionlevel() {
                         View Details
                       </button>
                     </Link>
-
                   </div>
                 </div>
               ))
             ) : (
               <div className="w-full text-center py-12">
                 <p className="text-gray-500 text-lg">No jobs found matching your search.</p>
+                <button 
+                  onClick={loadJobs}
+                  className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Reload Jobs
+                </button>
               </div>
             )}
           </div>
