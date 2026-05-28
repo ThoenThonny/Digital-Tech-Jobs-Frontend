@@ -162,7 +162,7 @@ export default function JobListings() {
         {/* Salary if available */}
         {job.salary && (
           <div className="mb-4">
-            <p className="text-green-600 font-semibold text-sm">{job.salary}</p>
+            <p className="text-green-600 font-semibold text-sm">{job.salary} $</p>
           </div>
         )}
         

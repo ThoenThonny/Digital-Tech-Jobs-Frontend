@@ -1,7 +1,7 @@
-// service/Auth.js
+
 import api from "./api";
 
-// Auth API Service
+
 export const authService = {
   // Register new user
   async register(userData) {
@@ -17,7 +17,7 @@ export const authService = {
     } catch (error) {
       console.error('Error registering user:', error);
       
-      // Handle validation errors
+      
       if (error.response?.data?.errors) {
         const errorMessages = Object.values(error.response.data.errors).flat().join(', ');
         throw new Error(`Registration failed: ${errorMessages}`);
@@ -145,7 +145,7 @@ export const authService = {
     }
   },
 
-  // Token management
+ 
   setToken(token) {
     localStorage.setItem('access_token', token);
     // Also set in sessionStorage for redundancy
@@ -198,7 +198,7 @@ export const authService = {
   }
 };
 
-// Individual export functions for direct usage
+
 export const register = (userData) => authService.register(userData);
 export const login = (credentials) => authService.login(credentials);
 export const logout = () => authService.logout();

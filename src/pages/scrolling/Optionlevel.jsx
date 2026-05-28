@@ -14,8 +14,8 @@ export default function Optionlevel() {
   const jobLevels = [
     { titleKh: 'ការងារមិនត្រូវការបទពិសោធន៍', titleEn: 'Internship', count: 15, icon: Briefcase },
     { titleKh: 'ការងារត្រូវការបទពិសោធន៍តិចតួច', titleEn: 'Junior Level', count: 15, icon: Zap },
-    { titleKh: 'ការងារមិនត្រូវការបទពិសោធន៍មធ្យម', titleEn: 'Medium Level', count: 15, icon: TrendingUp },
-    { titleKh: 'ការងារមិនត្រូវការបទពិសោធន៍ខ្ពស់', titleEn: 'Senior Level', count: 15, icon: Award },
+    { titleKh: 'ការងារត្រូវការបទពិសោធន៍មធ្យម', titleEn: 'Medium Level', count: 15, icon: TrendingUp },
+    { titleKh: 'ការងារត្រូវការបទពិសោធន៍ខ្ពស់', titleEn: 'Senior Level', count: 15, icon: Award },
   ];
 
   // Load jobs from API

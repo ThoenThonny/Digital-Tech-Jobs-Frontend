@@ -374,15 +374,11 @@ export default function ItcardMoreDetail() {
               {/* Apply Card */}
               <div className="bg-white rounded-xl shadow-sm border p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Ready to Apply?</h3>
-                <button 
-                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold shadow-sm"
-                  onClick={() => {
-                    console.log('Applying for job:', job.id);
-                    // Add application logic here
-                  }}
-                >
+               <a  href='https://t.me/nyfinker' target='_blank'>
+                 <button className=" cursor-pointer w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold shadow-sm">
                   Apply Now
                 </button>
+                </a>
               </div>
 
               {/* Company Info */}

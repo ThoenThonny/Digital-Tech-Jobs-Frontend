@@ -26,10 +26,10 @@ import NotFound from '../pages/NotFound/NotFound'
 import AdminProtectedRoute from '../admin/AdminProtectedRoute'
 import authService from '../service/Auth'
 
-// Initialize auth when app starts
+
 authService.initializeAuth();
 
-// Loading Component
+
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
@@ -135,11 +135,11 @@ function Layout() {
 
   return (
     <div>
-      {/* Don't show navbar on auth pages, 404 page, or dashboard */}
+  
       {!isAuthPage && !isNotFoundPage && !isDashboardPage && <Navbar />}
 
       <Routes>
-        {/* Public Auth Routes */}
+     
         <Route path="/register" element={
           <PublicRoute>
             <Register />
@@ -151,10 +151,10 @@ function Layout() {
           </PublicRoute>
         } />
 
-        {/* 404 Page */}
+     
         <Route path="/404" element={<NotFound />} />
 
-        {/* Protected Routes - Regular Users */}
+    
         <Route path='/' element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path='/itRelate' element={<ProtectedRoute><IT_relate /></ProtectedRoute>} />
         <Route path='/itRelate/itCardDetail' element={<ProtectedRoute><ItcardDetail /></ProtectedRoute>} />
@@ -173,7 +173,7 @@ function Layout() {
         <Route path='/design_jop/:id' element={<ProtectedRoute><AllDesign /></ProtectedRoute>} />
         <Route path='/design_jop/detail/:id' element={<ProtectedRoute><AllDetailCardDesign /></ProtectedRoute>} />
 
-        {/* Admin Only Route - No Navbar & Footer */}
+
         <Route path='/dashboard' element={
           <ProtectedRoute>
             <AdminProtectedRoute>
@@ -182,11 +182,10 @@ function Layout() {
           </ProtectedRoute>
         } />
 
-        {/* Catch all route - redirect to 404 for unknown paths */}
+       
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
 
-      {/* Don't show footer on auth pages, 404 page, or dashboard */}
       {!isAuthPage && !isNotFoundPage && !isDashboardPage && <Footer />}
     </div>
   )

@@ -170,9 +170,7 @@ const JobCard = ({ job, onEdit, onDelete, loading }) => (
     )}
 
     <div className="flex items-center justify-between">
-      <span className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded-full">
-        {job.skill}
-      </span>
+      
       <div className="flex gap-2">
         <button 
           onClick={() => onEdit(job)}
@@ -405,34 +403,7 @@ export default function Dashboard() {
   ];
 
   // Only 2 Developers: Backend & Frontend
-  const profileCards = [
-    {
-      name: 'Thonny',
-      role: 'Backend Developer',
-      avatar: '/public/Ny.jpg',
-      description: 'Backend PHP Laravel , and database design. Expert in building scalable APIs and microservices architecture.',
-      department: 'Backend Team',
-      joinDate: '2025-10-15',
-      skills: ['PHP', 'Laravel', 'MySQL', 'MongoDB', 'SQL Server'],
-      conect:'https://www.facebook.com/bro.nyslot',
-      projects: 24,
-      rating: 4.8,
-      icon: Server
-    },
-    {
-      name: 'Koem Tong',
-      role: 'Frontend Developer',
-      avatar: '/public/Tong.jpg',
-      description: 'Frontend expert specializing in React, and modern JavaScript. Passionate about creating responsive web applications.',
-      department: 'Frontend Team',
-      joinDate: '2025-10-15',
-      skills: ['React', 'Vue.js', 'TypeScript', 'Tailwind', 'Next.js'],
-      conect:'https://www.facebook.com/khong.kimtong',
-      projects: 18,
-      rating: 4.9,
-      icon: Monitor
-    }
-  ];
+ 
 
   // Show alert function
   const showAlert = (type, message, duration = 5000) => {
@@ -793,7 +764,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-blue-600 transition-all cursor-pointer" onClick={() => openPostJobModal()}>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center">
@@ -830,92 +801,14 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-600 to-red-600 flex items-center justify-center">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-100">{profileCards.length} Developers</h3>
-                <p className="text-gray-400 text-sm">Backend & Frontend specialists</p>
-              </div>
-            </div>
-          </div>
+         
         </div>
 
-        {/* 2 Developer Profile Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-86">
-          {profileCards.map((profile, index) => (
-            <div
-              key={index}
-              className="bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-800 hover:border-gray-700 transition-all"
-            >
-              <div className="md:flex">
-                {/* LEFT SIDE - Image */}
-                <div className="md:w-1/2 w-full h-60 md:h-auto overflow-hidden">
-                  <img
-                    src={profile.avatar}
-                    alt={profile.name}
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                  />
-                </div>
-
-                {/* RIGHT SIDE - Info */}
-                <div className="md:w-1/2 w-full p-6 flex flex-col justify-between">
-                  {/* Header */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                      {profile.name}
-                      {profile.verified && (
-                        <span className="text-blue-400">
-                          <profile.icon className="w-4 h-4" />
-                        </span>
-                      )}
-                    </h2>
-                    <p className="text-green-400 font-medium mb-2">{profile.role}</p>
-
-                    <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                      {profile.description}
-                    </p>
-                  </div>
-
-                  {/* Details grid */}
-                  <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-300">
-                    <p>
-                      <span className="text-gray-500">Role:</span>{" "}
-                      {profile.department}
-                    </p>
-                    <p>
-                      <span className="text-gray-500">Joined:</span>{" "}
-                      {profile.joinDate}
-                    </p>
-                  </div>
-
-                  {/* Skills */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {profile.skills.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded-full border border-gray-700"
-                      >
-                        ✓ {skill}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Contact Button */}
-                  <a href={profile.conect} target='_blank' rel="noopener noreferrer" className="mt-6 px-4 py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-all text-center">
-                    Contact Me
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+       
 
         {/* Additional Dashboard Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
+        <div className="grid  grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-gray-900  rounded-xl p-6 border border-gray-800">
             <h3 className="text-xl font-bold text-gray-100 mb-4">Recent Activity</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
